@@ -1,39 +1,112 @@
-console.log("Welcome to Spotify")
-//initialize the variables
+console.log("Welcome to Spotify");
+
+// Initialize variables
 let songIndex = 0;
-let AudioElement= new Audio('1.mp3');
-let masterPlay = document.getElementById('masterPlay');
-let myProgressBar = document.getElementById('myProgressBar');
-let Gif = document.getElementById('Gif');
+let audioElement = new Audio();
+let masterPlay = document.getElementById("masterPlay");
+let myProgressBar = document.getElementById("myProgressBar");
+let masterSongName = document.getElementById("masterSongName");
+let gif = document.getElementById("gif");
+
 let songs = [
-    { songName: "Tumhi mera mandir ", filePath: "C:\Users\neeta\OneDrive\Documents\spotify\WhatsApp Audio 2025-07-18 at 11.17.40 AM.mpeg", coverPath: "cover/1.jpeg" },
-    { songName: "Dil Dhadakne Do", filePath: "2.mp3", coverPath: "cover/2.jpeg" },
-    { songName: "Tum Hi Ho", filePath: "3.mp3", coverPath: "cover/3.jpeg" },
-    { songName: "Shape of You", filePath: "4.mp3", coverPath: "cover/4.jpeg" },
-    { songName: "Senorita", filePath: "5.mp3", coverPath: "cover/5.jpeg" },
-    { songName: "Despacito", filePath: "6.mp3", coverPath: "cover/6.jpeg" },
-    { songName: "Lean On", filePath: "7.mp3", coverPath: "cover/7.jpeg" },
-    { songName: "Rockabye", filePath: "8.mp3", coverPath: "cover/8.jpeg" },
-    { songName: "Cheap Thrills", filePath: "9.mp3", coverPath: "cover/9.jpeg" },
-    { songName: "Faded", filePath: "10.mp3", coverPath: "cover/10.jpeg" }
-]
-//audioElement.play();
-//Handle play/pause click;
-masterPlay.addEventListener('click' ,() => {
-    if(audioElement.paused || audioElement.currentTime<=0){
+    { songName: "Let me love you", filePath: "WhatsApp Audio 2025-07-18 at 11.17.40 AM.mpeg" },
+    { songName: "Faded", filePath: "WhatsApp Audio 2025-07-18 at 11.17.40 AM.mpeg" },
+    { songName: "Alone", filePath: "WhatsApp Audio 2025-07-18 at 11.17.40 AM.mpeg" },
+    { songName: "Spectre", filePath: "WhatsApp Audio 2025-07-18 at 11.17.40 AM.mpeg" },
+    { songName: "Fearless", filePath: "WhatsApp Audio 2025-07-18 at 11.17.40 AM.mpeg" },
+    { songName: "Heroes Tonight", filePath: "WhatsApp Audio 2025-07-18 at 11.17.40 AM.mpeg" },
+    { songName: "On & On", filePath: "WhatsApp Audio 2025-07-18 at 11.17.40 AM.mpeg" },
+    { songName: "Force", filePath: "WhatsApp Audio 2025-07-18 at 11.17.40 AM.mpeg" },
+    { songName: "Elektronomia - Sky High", filePath: "WhatsApp Audio 2025-07-18 at 11.17.40 AM.mpeg" },
+    { songName: "Different Heaven - My Heart", filePath: "WhatsApp Audio 2025-07-18 at 11.17.40 AM.mpeg" }
+];
+
+// Reset all play buttons
+function makeAllPlays() {
+    Array.from(document.getElementsByClassName("songItemPlay")).forEach((element) => {
+        element.classList.remove("fa-pause-circle");
+        element.classList.add("fa-play-circle");
+    });
+}
+
+// Play song from list
+Array.from(document.getElementsByClassName("songItemPlay")).forEach((element) => {
+    element.addEventListener("click", (e) => {
+        makeAllPlays();
+
+        songIndex = parseInt(e.target.id);
+
+        e.target.classList.remove("fa-play-circle");
+        e.target.classList.add("fa-pause-circle");
+
+        audioElement.src = songs[songIndex].filePath;
+        masterSongName.innerText = songs[songIndex].songName;
+
+        audioElement.currentTime = 0;
         audioElement.play();
-        masterPlay.classList.remove('fa play-circle');
-        masterPlay.classList.add('fa pause-circle');
-     Gif.style.opacity = 1;
-    }
-    else{
+
+        masterPlay.classList.remove("fa-play-circle");
+        masterPlay.classList.add("fa-pause-circle");
+        gif.style.opacity = 1;
+    });
+});
+
+// Master Play Button
+masterPlay.addEventListener("click", () => {
+    if (audioElement.paused || audioElement.currentTime <= 0) {
+        audioElement.play();
+        masterPlay.classList.remove("fa-play-circle");
+        masterPlay.classList.add("fa-pause-circle");
+        gif.style.opacity = 1;
+    } else {
         audioElement.pause();
-        masterPlay.classList.remove('fa pause-circle');
-        masterPlay.classList.add('fa play-circle');
-        Gif.style.opacity = 0;
+        masterPlay.classList.remove("fa-pause-circle");
+        masterPlay.classList.add("fa-play-circle");
+        gif.style.opacity = 0;
     }
 });
 
-myprogressBar.addEventListener("timeupdate", (event) => {
-    console.log('timeupdate')
+// Progress Bar Update
+audioElement.addEventListener("timeupdate", () => {
+    if (audioElement.duration) {
+        let progress = parseInt(
+            (audioElement.currentTime / audioElement.duration) * 100
+        );
+        myProgressBar.value = progress;
+    }
+});
+
+// Seek
+myProgressBar.addEventListener("input", () => {
+    audioElement.currentTime = (myProgressBar.value * audioElement.duration) / 100;
+});
+
+// Previous Button
+document.getElementById("previous").addEventListener("click", () => {
+    if (songIndex <= 0) {
+        songIndex = songs.length - 1;
+    } else {
+        songIndex -= 1;
+    }
+    audioElement.src = songs[songIndex].filePath;
+    masterSongName.innerText = songs[songIndex].songName;
+    audioElement.currentTime = 0;
+    audioElement.play();
+    masterPlay.classList.remove("fa-play-circle");
+    masterPlay.classList.add("fa-pause-circle");
+});
+
+// Next Button
+document.getElementById("next").addEventListener("click", () => {
+    if (songIndex >= songs.length - 1) {
+        songIndex = 0;
+    } else {
+        songIndex += 1;
+    }
+    audioElement.src = songs[songIndex].filePath;
+    masterSongName.innerText = songs[songIndex].songName;
+    audioElement.currentTime = 0;
+    audioElement.play();
+    masterPlay.classList.remove("fa-play-circle");
+    masterPlay.classList.add("fa-pause-circle");
 });
